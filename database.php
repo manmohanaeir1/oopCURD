@@ -27,8 +27,8 @@
         // for inserting data
         public function insert($table ,$parames = array()){
                  if($this->tableExist($table)){
-                    $table_colms = implode(', ', array_keys($parames));
-                    $table_value = implode("', '", $parames);
+                    $table_colms = implode(', ', array_keys($parames));   // convert array form  into string form => for database 
+                    $table_value = implode("', '", $parames); 
 
                     $sql = "INSERT INTO  $table ($table_colms) VALUES ('$table_value')";
 
@@ -46,12 +46,48 @@
 
         // update row data
 
-        public function update(){
+        public function update($table ,$parames = array(), $where = null){
+            if($this->tableExist($table)){
+                $args =  array();
+                foreach($parames as $key=> $value )
+                {
+                    $args[] = "$key = '$value'";
+                }
+                  $sql = "UPDATE  $table SET" . implode(', ', $args);  // convert array form  into string form => for database 
+                  if($where != null){
+                      $sql .= " WHERE $where";
+                  }
+                 if($this->mysqli->query($sql)){
+                    array_push($this->result, $this->mysqli->affected_rows);
+                    return true;
+                 }else{
+                    array_push($this->result, $this->mysqli->error);
+                    return true;
+                 }
+            }else{
+                return false;
+            }
 
         }
 
         //delete data from Db
-        public function delete(){
+        public function delete($table, $where = null){
+            if($this->tableExist($table)){
+                $sql =  "DELETE  FROM $table";
+                if($where!= null){
+                    $sql .= " WHERE $where";
+                }
+                if($this->mysqli->query($sql)){
+                    array_push($this->result, $this->mysqli->affected_rows);
+                    return true;
+                 }else{
+                    array_push($this->result, $this->mysqli->error);
+                    return true;
+                 }
+            }else{
+                return false;
+            }
+
 
         }
 
