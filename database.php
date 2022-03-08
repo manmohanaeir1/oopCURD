@@ -87,9 +87,47 @@
             }else{
                 return false;
             }
-
-
         }
+        // select record from databse
+        public function select($table,  $row = "*", $join = null, $where = null, $order = null, $limit = null){
+            if($this->tableExist($table)){
+                $sql = " SELECT $row FROM $table";
+                if($join != null){
+                    $sql .=" JOIN $join";
+                }
+                if($where != null){
+                    $sql .=" WHERE $where";
+                }
+                if($order != null){
+                    $sql .=" ORDER By $order";
+                }
+                if($limit != null){
+                    $sql .=" LIMIT 0, $limit";
+                }
+                echo $sql;
+                $query = $this->mysqli->query($sql);
+                if($query){
+                    $this->result= $query->fetch_all(MYSQLI_ASSOC);
+                    return true;
+                }else{
+                    array_push($this->result, $this->mysqli->error);
+                    return false;
+                }
+            }else{
+                return false; 
+            }
+        }
+
+        public function sql($sql){
+            $query = $this->mysqli->query($sql);
+            if($query){
+                $this->result= $query->fetch_all(MYSQLI_ASSOC);
+                return true;
+            }else{
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }
+        } 
 
         private function tableExist($table){
             $sql = "SHOW TABLES FROM $this->db_name LIKE '$table'";
